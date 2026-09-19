@@ -3985,9 +3985,8 @@ end
 --  GIF decoder
 -- ═══════════════════════════════════════════════════════════════
 
--- LZW dictionary-based decode per GIF spec
 local function lzw_decode(min_code_size, data, expected_pixels)
-    local clear_code = 1 << min_code_size
+    local clear_code = bit32.lshift(1, min_code_size)
     local end_code   = clear_code + 1
     local code_size  = min_code_size + 1
     local dict = {}
@@ -4008,13 +4007,13 @@ local function lzw_decode(min_code_size, data, expected_pixels)
 
     while pos <= data_len or bit_count >= code_size do
         while bit_count < code_size and pos <= data_len do
-            bit_buf = bit_buf + (string.byte(data, pos) << bit_count)
+            bit_buf = bit_buf + bit32.lshift(string.byte(data, pos), bit_count)
             bit_count = bit_count + 8
             pos = pos + 1
         end
         if bit_count < code_size then break end
 
-        local code = bit_buf % (1 << code_size)
+        local code = bit_buf % bit32.lshift(1, code_size)
         bit_buf = bit32.rshift(bit_buf, code_size)
         bit_count = bit_count - code_size
 
@@ -4035,7 +4034,7 @@ local function lzw_decode(min_code_size, data, expected_pixels)
             output[#output+1] = entry
             if prev then
                 dict[#dict] = prev..entry:sub(1, 1)
-                if #dict >= (1 << code_size) and code_size < 12 then
+                if #dict >= bit32.lshift(1, code_size) and code_size < 12 then
                     code_size = code_size + 1
                 end
             end
