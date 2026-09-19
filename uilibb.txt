@@ -98,18 +98,18 @@ local Config = setmetatable({
 }, Config)
 
 local DefaultTheme = {
-    Background   = Color3.fromRGB(0, 0, 0),
-    Group        = Color3.fromRGB(12, 12, 15),
-    GroupStroke  = Color3.fromRGB(28, 28, 34),
-    Control      = Color3.fromRGB(22, 22, 26),
-    ControlHover = Color3.fromRGB(32, 32, 38),
-    Divider      = Color3.fromRGB(28, 28, 32),
-    Text         = Color3.fromRGB(238, 238, 242),
-    TextDim      = Color3.fromRGB(130, 130, 140),
-    TextSoft     = Color3.fromRGB(185, 185, 195),
-    Accent       = Color3.fromRGB(224, 224, 224),
-    Toggle       = Color3.fromRGB(150, 150, 158),
-    InputBg      = Color3.fromRGB(14, 14, 18),
+    Background   = Color3.fromRGB(10, 10, 12),
+    Group        = Color3.fromRGB(17, 17, 20),
+    GroupStroke  = Color3.fromRGB(30, 30, 34),
+    Control      = Color3.fromRGB(24, 24, 28),
+    ControlHover = Color3.fromRGB(34, 34, 40),
+    Divider      = Color3.fromRGB(30, 30, 34),
+    Text         = Color3.fromRGB(240, 240, 245),
+    TextDim      = Color3.fromRGB(120, 120, 130),
+    TextSoft     = Color3.fromRGB(180, 180, 190),
+    Accent       = Color3.fromRGB(230, 230, 235),
+    Toggle       = Color3.fromRGB(160, 160, 170),
+    InputBg      = Color3.fromRGB(20, 20, 24),
     Gradient = ColorSequence.new{
         ColorSequenceKeypoint.new(0.00, Color3.fromRGB(8, 8, 10)),
         ColorSequenceKeypoint.new(1.00, Color3.fromRGB(8, 8, 10))
@@ -676,7 +676,7 @@ function Library:create_ui()
     SideGradient.Parent = SideBar
 
     local UICorner = Instance.new('UICorner')
-    UICorner.CornerRadius = UDim.new(0, 10)
+    UICorner.CornerRadius = UDim.new(0, 14)
     UICorner.Parent = Container
 
     local UIStroke = Instance.new('UIStroke')
@@ -702,7 +702,7 @@ function Library:create_ui()
     Tabs.Selectable = false
     Tabs.AutomaticCanvasSize = Enum.AutomaticSize.XY
     Tabs.BackgroundTransparency = 1
-    Tabs.Position = UDim2.new(0, 18, 0, 67)
+    Tabs.Position = UDim2.new(0, 14, 0, 67)
     Tabs.BorderColor3 = Color3.fromRGB(0, 0, 0)
     Tabs.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
     Tabs.BorderSizePixel = 0
@@ -778,25 +778,77 @@ function Library:create_ui()
     Minimize.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
     Minimize.Parent = Handler
 
-    local Search = Instance.new('ImageButton')
-    Search.Name = 'Search'
-    Search.AutoButtonColor = false
-    Search.BackgroundTransparency = 1
-    Search.BorderSizePixel = 0
-    Search.BorderColor3 = Color3.fromRGB(0, 0, 0)
-    Search.Image = 'rbxassetid://102373102520464'
-    Search.ImageColor3 = Color3.fromRGB(188, 188, 188)
-    Search.ImageTransparency = 0
-    Search.ScaleType = Enum.ScaleType.Fit
-    Search.AnchorPoint = Vector2.new(1, 0.5)
-    Search.Position = UDim2.new(0, 734, 0, 26)
-    Search.Size = UDim2.new(0, 22, 0, 22)
-    Search.Parent = Handler
+    -- Search bar
+    local SearchBar = Instance.new('Frame')
+    SearchBar.Name = 'SearchBar'
+    SearchBar.Size = UDim2.new(0, 200, 0, 28)
+    SearchBar.Position = UDim2.new(1, -244, 0, 12)
+    SearchBar.BackgroundColor3 = Color3.fromRGB(18, 18, 22)
+    SearchBar.BorderSizePixel = 0
+    SearchBar.Parent = Handler
+
+    local SearchBarCorner = Instance.new('UICorner')
+    SearchBarCorner.CornerRadius = UDim.new(0, 6)
+    SearchBarCorner.Parent = SearchBar
+
+    local SearchBarStroke = Instance.new('UIStroke')
+    SearchBarStroke.Color = Color3.fromRGB(30, 30, 36)
+    SearchBarStroke.Transparency = 0.5
+    SearchBarStroke.Thickness = 1
+    SearchBarStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+    SearchBarStroke.Parent = SearchBar
+
+    local SearchIcon = Instance.new('ImageLabel')
+    SearchIcon.Size = UDim2.new(0, 14, 0, 14)
+    SearchIcon.Position = UDim2.new(0, 8, 0.5, -7)
+    SearchIcon.BackgroundTransparency = 1
+    SearchIcon.Image = 'rbxassetid://102373102520464'
+    SearchIcon.ImageColor3 = Color3.fromRGB(120, 120, 130)
+    SearchIcon.Parent = SearchBar
+
+    local SearchInput = Instance.new('TextBox')
+    SearchInput.Name = 'SearchInput'
+    SearchInput.Size = UDim2.new(1, -30, 1, 0)
+    SearchInput.Position = UDim2.new(0, 26, 0, 0)
+    SearchInput.BackgroundTransparency = 1
+    SearchInput.FontFace = FONT_REGULAR
+    SearchInput.TextColor3 = Color3.fromRGB(220, 220, 230)
+    SearchInput.PlaceholderText = 'Search'
+    SearchInput.PlaceholderColor3 = Color3.fromRGB(90, 90, 100)
+    SearchInput.TextSize = 12
+    SearchInput.Parent = SearchBar
+
+    -- Minimize button "-"
+    local MinimizeBtn = Instance.new('TextButton')
+    MinimizeBtn.Name = 'MinimizeBtn'
+    MinimizeBtn.Size = UDim2.new(0, 28, 0, 28)
+    MinimizeBtn.Position = UDim2.new(1, -36, 0, 12)
+    MinimizeBtn.BackgroundColor3 = Color3.fromRGB(18, 18, 22)
+    MinimizeBtn.BorderSizePixel = 0
+    MinimizeBtn.Text = '−'
+    MinimizeBtn.TextColor3 = Color3.fromRGB(180, 180, 190)
+    MinimizeBtn.TextSize = 16
+    MinimizeBtn.FontFace = FONT_MAIN
+    MinimizeBtn.AutoButtonColor = false
+    MinimizeBtn.Parent = Handler
+
+    local MinimizeBtnCorner = Instance.new('UICorner')
+    MinimizeBtnCorner.CornerRadius = UDim.new(0, 6)
+    MinimizeBtnCorner.Parent = MinimizeBtn
+
+    MinimizeBtn.MouseButton1Click:Connect(function()
+        self._ui_open = not self._ui_open
+        if Library._config._flags['UI_Gui_Visible'] then
+            self:set_gui_visibility(self._ui_open)
+            return
+        end
+        self:change_visiblity(self._ui_open)
+    end)
 
     local MiniSearch = Instance.new('TextBox')
     MiniSearch.Name = 'MiniSearch'
     MiniSearch.Size = UDim2.new(0, 200, 0, 30)
-    MiniSearch.Position = UDim2.new(1, -240, 0.5, -15)
+    MiniSearch.Position = UDim2.new(1, -244, 0.5, -15)
     MiniSearch.BackgroundColor3 = Color3.fromRGB(18, 18, 22)
     MiniSearch.BackgroundTransparency = 0.2
     MiniSearch.BorderSizePixel = 0
@@ -935,7 +987,7 @@ function self:load()
         local viewport = Workspace.CurrentCamera.ViewportSize
         local max_w = viewport.X - 40
         local max_h = viewport.Y - 40
-        local want_w, want_h = 752, 479
+        local want_w, want_h = 660, 460
         local w = math.min(want_w, max_w)
         local h = math.min(want_h, max_h)
         return w, h
@@ -946,8 +998,8 @@ function self:load()
         local max_w = viewport.X - 40
         local max_h = viewport.Y - 40
 
-        local scale_x = math.min(1, max_w / 752)
-        local scale_y = math.min(1, max_h / 479)
+        local scale_x = math.min(1, max_w / 660)
+        local scale_y = math.min(1, max_h / 460)
         local scale = math.clamp(math.min(scale_x, scale_y), 0.55, 1)
 
         UIScale.Scale = scale
@@ -1057,7 +1109,7 @@ end
         Tab.AutoButtonColor = false
         Tab.BackgroundTransparency = 1
         Tab.Name = 'Tab'
-        Tab.Size = UDim2.new(0, 129, 0, 38)
+        Tab.Size = UDim2.new(0, 140, 0, 40)
         Tab.BorderSizePixel = 0
         Tab.TextSize = 14
         Tab.BackgroundColor3 = Theme.Group
@@ -1076,7 +1128,7 @@ end
         TextLabel.Text = title
         TextLabel.Size = UDim2.new(0, font_size.X, 0, 16)
         TextLabel.AnchorPoint = Vector2.new(0, 0.5)
-        TextLabel.Position = UDim2.new(0, 37, 0.5, 0)
+        TextLabel.Position = UDim2.new(0, 40, 0.5, 0)
         TextLabel.BackgroundTransparency = 1
         TextLabel.TextXAlignment = Enum.TextXAlignment.Left
         TextLabel.BorderSizePixel = 0
@@ -1094,7 +1146,7 @@ end
         Icon.Name = 'Icon'
         Icon.Size = UDim2.new(0, icon_size or 16, 0, icon_size or 16)
         Icon.AnchorPoint = Vector2.new(0.5, 0.5)
-        Icon.Position = UDim2.new(0, 19, 0.5, 0)
+        Icon.Position = UDim2.new(0, 20, 0.5, 0)
         Icon.BackgroundTransparency = 1
         Icon.BorderSizePixel = 0
         Icon.BorderColor3 = Color3.fromRGB(0, 0, 0)
@@ -1112,11 +1164,11 @@ end
         LeftSection.AutomaticCanvasSize = Enum.AutomaticSize.XY
         LeftSection.ScrollBarThickness = 0
         LeftSection.ScrollBarImageTransparency = 1
-        LeftSection.Size = UDim2.new(0, 243, 0, 355)
+        LeftSection.Size = UDim2.new(0, 200, 0, 355)
         LeftSection.Selectable = false
         LeftSection.AnchorPoint = Vector2.new(0, 0)
         LeftSection.BackgroundTransparency = 1
-        LeftSection.Position = UDim2.new(0, 203, 0, 67)
+        LeftSection.Position = UDim2.new(0, 178, 0, 67)
         LeftSection.BorderColor3 = Color3.fromRGB(0, 0, 0)
         LeftSection.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
         LeftSection.BorderSizePixel = 0
@@ -1138,12 +1190,12 @@ end
         RightSection.Name = 'RightSection'
         RightSection.AutomaticCanvasSize = Enum.AutomaticSize.XY
         RightSection.ScrollBarThickness = 0
-        RightSection.Size = UDim2.new(0, 243, 0, 355)
+        RightSection.Size = UDim2.new(0, 200, 0, 355)
         RightSection.Selectable = false
         RightSection.AnchorPoint = Vector2.new(0, 0)
         RightSection.ScrollBarImageTransparency = 1
         RightSection.BackgroundTransparency = 1
-        RightSection.Position = UDim2.new(0, 474, 0, 67)
+        RightSection.Position = UDim2.new(0, 414, 0, 67)
         RightSection.BorderColor3 = Color3.fromRGB(0, 0, 0)
         RightSection.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
         RightSection.BorderSizePixel = 0
@@ -1177,7 +1229,7 @@ end
         function TabManager:create_module(settings)
             local LayoutOrderModule = 0
             local ModuleManager = {
-                _state = false,
+                _state = true,
                 _size = 0,
                 _multiplier = 0
             }
@@ -1194,7 +1246,7 @@ end
             Module.BackgroundTransparency = 0
             Module.Position = UDim2.new(0.004115226212888956, 0, 0, 0)
             Module.Name = 'Module'
-            Module.Size = UDim2.new(0, 241, 0, 93)
+            Module.Size = UDim2.new(0, 200, 0, 93)
             Module.BorderSizePixel = 0
             Module.BackgroundColor3 = Color3.fromRGB(12, 12, 15)
             Module.Parent = settings.section
@@ -1204,11 +1256,11 @@ end
             ModuleShadow.Name = 'ModuleShadow'
             ModuleShadow.AnchorPoint = Vector2.new(0.5, 0.5)
             ModuleShadow.Position = UDim2.new(0.5, 0, 0.5, 1)
-            ModuleShadow.Size = UDim2.new(1, 16, 1, 16)
+            ModuleShadow.Size = UDim2.new(1, 28, 1, 28)
             ModuleShadow.BackgroundTransparency = 1
             ModuleShadow.Image = 'rbxassetid://6014261993'
             ModuleShadow.ImageColor3 = Color3.fromRGB(0, 0, 0)
-            ModuleShadow.ImageTransparency = 0.6
+            ModuleShadow.ImageTransparency = 0.75
             ModuleShadow.ScaleType = Enum.ScaleType.Slice
             ModuleShadow.SliceCenter = Rect.new(49, 49, 450, 450)
             ModuleShadow.ZIndex = 0
@@ -1220,7 +1272,7 @@ end
             UIListLayout_Mod.Parent = Module
 
             local UICorner = Instance.new('UICorner')
-            UICorner.CornerRadius = UDim.new(0, 9)
+            UICorner.CornerRadius = UDim.new(0, 12)
             UICorner.Parent = Module
 
             local ModuleStroke = Instance.new('UIStroke')
@@ -1262,7 +1314,7 @@ end
             ModuleName.BackgroundTransparency = 1
             ModuleName.TextXAlignment = Enum.TextXAlignment.Left
             ModuleName.BorderSizePixel = 0
-            ModuleName.TextSize = 13
+            ModuleName.TextSize = 14
             ModuleName.Parent = Header
             table.insert(Library._elements, {obj = ModuleName, prop = "TextColor3", tKey = "Text"})
 
@@ -1292,16 +1344,16 @@ end
             Description.BackgroundTransparency = 1
             Description.TextXAlignment = Enum.TextXAlignment.Left
             Description.BorderSizePixel = 0
-            Description.TextSize = 10
+            Description.TextSize = 11
             Description.Parent = Header
             table.insert(Library._elements, {obj = Description, prop = "TextColor3", tKey = "TextDim"})
 
             local Toggle = Instance.new('Frame')
             Toggle.Name = 'Toggle'
             Toggle.BackgroundTransparency = 0
-            Toggle.Position = UDim2.new(0, 229, 0, 76)
+            Toggle.Position = UDim2.new(0, 188, 0, 76)
             Toggle.AnchorPoint = Vector2.new(1, 0.5)
-            Toggle.Size = UDim2.new(0, 30, 0, 16)
+            Toggle.Size = UDim2.new(0, 36, 0, 18)
             Toggle.BorderSizePixel = 0
             Toggle.BackgroundColor3 = Theme.Control
             Toggle.Parent = Header
@@ -1315,7 +1367,7 @@ end
             Circle.BackgroundTransparency = 0
             Circle.Position = UDim2.new(0, 2, 0.5, 0)
             Circle.Name = 'Circle'
-            Circle.Size = UDim2.new(0, 12, 0, 12)
+            Circle.Size = UDim2.new(0, 14, 0, 14)
             Circle.BorderSizePixel = 0
             Circle.BackgroundColor3 = Theme.TextDim
             Circle.Parent = Toggle
@@ -1369,7 +1421,7 @@ end
             Keybind.AutoButtonColor = false
             Keybind.Text = ''
             Keybind.BackgroundTransparency = 0
-            Keybind.Position = UDim2.new(0, 34, 0, 67)
+            Keybind.Position = UDim2.new(0, 34, 0, 70)
             Keybind.Size = UDim2.new(0, 38, 0, 16)
             Keybind.BorderSizePixel = 0
             Keybind.BackgroundColor3 = Theme.Control
@@ -2140,7 +2192,7 @@ end
                 self._size += 29
 
                 if ModuleManager._state then
-                    Module.Size = UDim2.fromOffset(241, 93 + self._size + self._multiplier)
+                                Module.Size = UDim2.fromOffset(200, 93 + self._size + self._multiplier)
                 end
                 Options.Size = UDim2.fromOffset(241, self._size + self._multiplier)
 
@@ -2271,7 +2323,7 @@ end
                     if ModuleManager._state then
                         Module.Size = UDim2.fromOffset(241, 93 + self._size)
                     end
-                    Options.Size = UDim2.fromOffset(241, self._size)
+                                Options.Size = UDim2.fromOffset(200, self._size)
                 end
 
                 local Dropdown = Instance.new('TextButton')
@@ -2661,6 +2713,11 @@ end
 
             Library._flag_registry[settings.flag] = function(state)
                 ModuleManager:change_state(state)
+            end
+
+            if ModuleManager._state then
+                Module.Size = UDim2.fromOffset(200, 93 + ModuleManager._size + ModuleManager._multiplier)
+                Options.Size = UDim2.fromOffset(200, ModuleManager._size + ModuleManager._multiplier)
             end
 
             return ModuleManager
