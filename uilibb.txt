@@ -269,6 +269,7 @@ function Library.new(opts)
 
     local self = setmetatable({ _tab = 0 }, Library)
     self:create_ui()
+    self:load()
     return self
 end
 
