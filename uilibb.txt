@@ -3551,7 +3551,7 @@ end
                 Library._config._flags['Background_Image_Id'] = ''
             end)
 
-            image_module._size += 80 + 36 + 34 + 34 + 40
+            image_module._size += 32 + 32 + 30 + 30 + 28
             Opts.Size = UDim2.fromOffset(240, image_module._size)
             if image_module._state then
                 image_module:change_state(true)
