@@ -3275,12 +3275,12 @@ end
                 close_popup()
             end)
 
-            color_module._size = 320
-            Opts.Size = UDim2.fromOffset(240, color_module._size)
-            if color_module._state then
-                color_module:change_state(true)
-            end
-        end
+color_module._size = 320
+Opts.Size = UDim2.fromOffset(240, color_module._size)
+Color_Module_Frame.Size = UDim2.fromOffset(240, 93 + color_module._size)
+if color_module._state then
+    color_module:change_state(true)
+end
 
         local image_module = InterfaceTab:create_module({
             title = 'Background',
@@ -3551,13 +3551,12 @@ end
                 Library._config._flags['Background_Image_Id'] = ''
             end)
 
-            -- image_module._size уже посчитан автоматически
-            image_module._size += 32 + 32 + 30 + 30 + 28 + 70
-            Opts.Size = UDim2.fromOffset(240, image_module._size)
-            if image_module._state then
-                image_module:change_state(true)
-            end
-        end
+image_module._size += 32 + 32 + 30 + 30 + 28 + 70
+Opts.Size = UDim2.fromOffset(240, image_module._size)
+Image_Module_Frame.Size = UDim2.fromOffset(240, 93 + image_module._size)
+if image_module._state then
+    image_module:change_state(true)
+end
 
         set_background_image(Background_Image_Id)
         set_module_transparency((Library._config._flags['Background_Module_Transparency'] or 0) / 100)
