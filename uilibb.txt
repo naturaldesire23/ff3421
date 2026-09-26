@@ -158,6 +158,8 @@ local function applyAilonModuleGradient(frame)
 end
 
 local Library = {
+    _active_left = nil,
+    _active_right = nil,
     _config = nil,
     _choosing_keybind = false,
     _device = nil,
@@ -754,6 +756,12 @@ function Library:create_ui()
         local query = SearchInput.Text:lower()
 
         if query == '' then
+            -- Возвращаем активную вкладку
+            for _, section in ipairs(Sections:GetChildren()) do
+                if section.Name == 'LeftSection' or section.Name == 'RightSection' then
+                    section.Visible = (section == Library._active_left or section == Library._active_right)
+                end
+            end
             for _, entry in ipairs(Library._moduleLive) do
                 local m = entry.module
                 if m and m._frame then
@@ -762,7 +770,14 @@ function Library:create_ui()
             end
             return
         end
+        -- Показываем ВСЕ секции при поиске
+        for _, section in ipairs(Sections:GetChildren()) do
+            if section.Name == 'LeftSection' or section.Name == 'RightSection' then
+                section.Visible = true
+            end
+        end
 
+        -- Фильтруем модули по имени
         for _, entry in ipairs(Library._moduleLive) do
             local m = entry.module
             if m and m._name and m._frame then
@@ -915,14 +930,12 @@ function Library:create_ui()
             TweenService:Create(Container, TweenInfo.new(0.35, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out), {
                 Size = UDim2.fromOffset(680, 470)
             }):Play()
+            RestoreBtn.Visible = false
+            MinimizeBtn.Visible = true
         else
-            local t = TweenService:Create(Container, TweenInfo.new(0.25, Enum.EasingStyle.Exponential, Enum.EasingDirection.In), {
-                Size = UDim2.fromOffset(0, 0)
-            })
-            t:Play()
-            t.Completed:Once(function()
-                self._ui.Enabled = false
-            end)
+            Container.Size = UDim2.fromOffset(160, 56)
+            RestoreBtn.Visible = true
+            MinimizeBtn.Visible = false
         end
     end
 
@@ -1162,11 +1175,15 @@ end
         self._tab += 1
 
         if first_tab then
+            Library._active_left = LeftSection
+            Library._active_right = RightSection
             self:update_tabs(Tab, LeftSection, RightSection)
             self:update_sections(LeftSection, RightSection)
         end
 
         Tab.MouseButton1Click:Connect(function()
+            Library._active_left = LeftSection
+            Library._active_right = RightSection
             self:update_tabs(Tab, LeftSection, RightSection)
             self:update_sections(LeftSection, RightSection)
         end)
@@ -1407,9 +1424,7 @@ end
             UIListLayout_Opts.Parent = Options
 
 
-            ModuleManager._tab = Tab  -- ссылка на вкладку
-            ModuleManager._left_section = LeftSection
-            ModuleManager._right_section = RightSection
+            -- удалено: _tab, _left_section, _right_section не используются
 
             function ModuleManager:change_state(state)
                 self._state = state
@@ -3534,7 +3549,8 @@ end
                 Library._config._flags['Background_Image_Id'] = ''
             end)
 
-            image_module._size += 80 + 36 + 34 + 34 + 40            Opts.Size = UDim2.fromOffset(240, image_module._size)
+            image_module._size += 80 + 36 + 34 + 34 + 40
+            Opts.Size = UDim2.fromOffset(240, image_module._size)
             if image_module._state then
                 image_module:change_state(true)
             end
