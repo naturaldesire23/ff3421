@@ -750,7 +750,7 @@ function Library:create_ui()
     SearchInput.Text = ''
     SearchInput.Parent = SearchBar
 
-     SearchInput:GetPropertyChangedSignal('Text'):Connect(function()
+    SearchInput:GetPropertyChangedSignal('Text'):Connect(function()
         local query = SearchInput.Text:lower()
 
         if query == '' then
@@ -771,36 +771,6 @@ function Library:create_ui()
             end
         end
     end)
-        -- Ищем совпадения по всем модулям всех вкладок
-        local found_tab = nil
-        local found_module = nil
-
-        for _, entry in ipairs(Library._moduleLive) do
-            local m = entry.module
-            if m and m._name and m._frame then
-                local match = m._name:lower():find(query, 1, true)
-                m._frame.Visible = match
-                if match and not found_module then
-                    found_module = m
-                end
-            end
-        end
-
-        -- Скрываем все вкладки, кроме той, где есть совпадение
-        if found_module then
-            for _, tab in ipairs(Tabs:GetChildren()) do
-                if tab.Name == 'Tab' then
-                    tab.Visible = true  -- оставляем все вкладки видимыми
-                end
-            end
-            for _, section in ipairs(Sections:GetChildren()) do
-                if section.Name == 'LeftSection' or section.Name == 'RightSection' then
-                    section.Visible = true
-                end
-            end
-        end
-    end)
-
     -- Minimize button "-"
     local MinimizeBtn = Instance.new('TextButton')
     MinimizeBtn.Name = 'MinimizeBtn'
@@ -1436,8 +1406,7 @@ end
             UIListLayout_Opts.SortOrder = Enum.SortOrder.LayoutOrder
             UIListLayout_Opts.Parent = Options
 
-            ModuleManager._name = settings.title or "Module"
-            ModuleManager._frame = Module
+
             ModuleManager._tab = Tab  -- ссылка на вкладку
             ModuleManager._left_section = LeftSection
             ModuleManager._right_section = RightSection
@@ -2956,8 +2925,6 @@ end
             end
         })
 
-        config_module._size += 5
-
         local color_module = InterfaceTab:create_module({
             title = 'Appearance',
             flag = 'Gui_Colors',
@@ -3567,8 +3534,7 @@ end
                 Library._config._flags['Background_Image_Id'] = ''
             end)
 
-            image_module._size += 80 + 32 + 30 + 30 + 36
-            Opts.Size = UDim2.fromOffset(240, image_module._size)
+            image_module._size += 80 + 36 + 34 + 34 + 40            Opts.Size = UDim2.fromOffset(240, image_module._size)
             if image_module._state then
                 image_module:change_state(true)
             end
