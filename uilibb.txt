@@ -756,6 +756,11 @@ function Library:create_ui()
         local query = SearchInput.Text:lower()
 
         if query == '' then
+            for _, section in ipairs(Sections:GetChildren()) do
+                if section.Name == 'LeftSection' or section.Name == 'RightSection' then
+                    section.Visible = (section == Library._active_left or section == Library._active_right)
+                end
+            end
             for _, entry in ipairs(Library._moduleLive) do
                 local m = entry.module
                 if m and m._frame then
@@ -765,27 +770,17 @@ function Library:create_ui()
             return
         end
 
-        for _, entry in ipairs(Library._moduleLive) do
-            local m = entry.module
-            if m and m._frame then
-                local name = m._name or ""
-                local match = name ~= "" and name:lower():find(query, 1, true) ~= nil
-                m._frame.Visible = match
-            end
-        end
-    end)
-        -- Показываем ВСЕ секции при поиске
         for _, section in ipairs(Sections:GetChildren()) do
             if section.Name == 'LeftSection' or section.Name == 'RightSection' then
                 section.Visible = true
             end
         end
 
-        -- Фильтруем модули по имени
         for _, entry in ipairs(Library._moduleLive) do
             local m = entry.module
-            if m and m._name and m._frame then
-                local match = m._name:lower():find(query, 1, true)
+            if m and m._frame then
+                local name = m._name or ""
+                local match = name ~= "" and name:lower():find(query, 1, true) ~= nil
                 m._frame.Visible = match
             end
         end
