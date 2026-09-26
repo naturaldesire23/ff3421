@@ -750,13 +750,53 @@ function Library:create_ui()
     SearchInput.Text = ''
     SearchInput.Parent = SearchBar
 
-    SearchInput:GetPropertyChangedSignal('Text'):Connect(function()
+     SearchInput:GetPropertyChangedSignal('Text'):Connect(function()
         local query = SearchInput.Text:lower()
+
+        if query == '' then
+            for _, entry in ipairs(Library._moduleLive) do
+                local m = entry.module
+                if m and m._frame then
+                    m._frame.Visible = true
+                end
+            end
+            return
+        end
+
         for _, entry in ipairs(Library._moduleLive) do
             local m = entry.module
             if m and m._name and m._frame then
-                local match = query == '' or m._name:lower():find(query, 1, true)
+                local match = m._name:lower():find(query, 1, true)
                 m._frame.Visible = match
+            end
+        end
+    end)
+        -- Ищем совпадения по всем модулям всех вкладок
+        local found_tab = nil
+        local found_module = nil
+
+        for _, entry in ipairs(Library._moduleLive) do
+            local m = entry.module
+            if m and m._name and m._frame then
+                local match = m._name:lower():find(query, 1, true)
+                m._frame.Visible = match
+                if match and not found_module then
+                    found_module = m
+                end
+            end
+        end
+
+        -- Скрываем все вкладки, кроме той, где есть совпадение
+        if found_module then
+            for _, tab in ipairs(Tabs:GetChildren()) do
+                if tab.Name == 'Tab' then
+                    tab.Visible = true  -- оставляем все вкладки видимыми
+                end
+            end
+            for _, section in ipairs(Sections:GetChildren()) do
+                if section.Name == 'LeftSection' or section.Name == 'RightSection' then
+                    section.Visible = true
+                end
             end
         end
     end)
@@ -786,6 +826,34 @@ function Library:create_ui()
             return
         end
         self:change_visiblity(Library._ui_open)
+    end)
+
+    -- Restore button (виден только в свёрнутом режиме)
+    local RestoreBtn = Instance.new('TextButton')
+    RestoreBtn.Name = 'RestoreBtn'
+    RestoreBtn.Size = UDim2.new(0, 28, 0, 28)
+    RestoreBtn.Position = UDim2.new(1, -36, 0.5, -14)
+    RestoreBtn.BackgroundColor3 = Color3.fromRGB(18, 18, 22)
+    RestoreBtn.BorderSizePixel = 0
+    RestoreBtn.Text = '+'
+    RestoreBtn.TextColor3 = Color3.fromRGB(180, 180, 190)
+    RestoreBtn.TextSize = 18
+    RestoreBtn.FontFace = FONT_MAIN
+    RestoreBtn.AutoButtonColor = false
+    RestoreBtn.Visible = false
+    RestoreBtn.Parent = Handler
+
+    local RestoreBtnCorner = Instance.new('UICorner')
+    RestoreBtnCorner.CornerRadius = UDim.new(0, 6)
+    RestoreBtnCorner.Parent = RestoreBtn
+
+    RestoreBtn.MouseButton1Click:Connect(function()
+        Library._ui_open = true
+        if Library._config._flags['UI_Gui_Visible'] then
+            self:set_gui_visibility(true)
+            return
+        end
+        self:change_visiblity(true)
     end)
 
     local UIScale = Instance.new('UIScale')
@@ -856,12 +924,16 @@ function Library:create_ui()
             TweenService:Create(Container, TweenInfo.new(0.28, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {
                 Size = full
             }):Play()
+            RestoreBtn.Visible = false
+            MinimizeBtn.Visible = true
         else
             Logo.Position = UDim2.new(0, 10, 0, 28)
             ClientName.Position = UDim2.new(0, 39, 0, 28)
             TweenService:Create(Container, TweenInfo.new(0.28, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {
-                Size = UDim2.fromOffset(104.5, 56)
+                Size = UDim2.fromOffset(160, 56)
             }):Play()
+            RestoreBtn.Visible = true
+            MinimizeBtn.Visible = false
         end
     end
 
@@ -1366,6 +1438,9 @@ end
 
             ModuleManager._name = settings.title or "Module"
             ModuleManager._frame = Module
+            ModuleManager._tab = Tab  -- ссылка на вкладку
+            ModuleManager._left_section = LeftSection
+            ModuleManager._right_section = RightSection
 
             function ModuleManager:change_state(state)
                 self._state = state
