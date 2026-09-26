@@ -756,12 +756,6 @@ function Library:create_ui()
         local query = SearchInput.Text:lower()
 
         if query == '' then
-            -- Возвращаем активную вкладку
-            for _, section in ipairs(Sections:GetChildren()) do
-                if section.Name == 'LeftSection' or section.Name == 'RightSection' then
-                    section.Visible = (section == Library._active_left or section == Library._active_right)
-                end
-            end
             for _, entry in ipairs(Library._moduleLive) do
                 local m = entry.module
                 if m and m._frame then
@@ -770,6 +764,16 @@ function Library:create_ui()
             end
             return
         end
+
+        for _, entry in ipairs(Library._moduleLive) do
+            local m = entry.module
+            if m and m._frame then
+                local name = m._name or ""
+                local match = name ~= "" and name:lower():find(query, 1, true) ~= nil
+                m._frame.Visible = match
+            end
+        end
+    end)
         -- Показываем ВСЕ секции при поиске
         for _, section in ipairs(Sections:GetChildren()) do
             if section.Name == 'LeftSection' or section.Name == 'RightSection' then
@@ -826,8 +830,7 @@ function Library:create_ui()
     RestoreBtn.FontFace = FONT_MAIN
     RestoreBtn.AutoButtonColor = false
     RestoreBtn.Visible = false
-    RestoreBtn.Parent = Handler
-
+    RestoreBtn.Parent = Container
     local RestoreBtnCorner = Instance.new('UICorner')
     RestoreBtnCorner.CornerRadius = UDim.new(0, 6)
     RestoreBtnCorner.Parent = RestoreBtn
@@ -1324,8 +1327,12 @@ end
             CircleCorner.CornerRadius = UDim.new(1, 0)
             CircleCorner.Parent = Circle
 
-            table.insert(Library._moduleLive, { toggle = Toggle, knob = Circle, module = ModuleManager })
+            ModuleManager._name = settings.title or "Module"
+            ModuleManager._frame = Module
 
+            table.insert(Library._moduleLive, { toggle = Toggle, knob = Circle, module = ModuleManager })
+            ModuleManager._name = settings.title or "Module"
+            ModuleManager._frame = Module
             local Icon = Instance.new('ImageLabel')
             Icon.Name = 'Icon'
             Icon.Image = resolve_image(settings.icon or 'rbxassetid://79095934438045', NAMESPACE..'/Icons')
