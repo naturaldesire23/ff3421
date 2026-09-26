@@ -2881,8 +2881,7 @@ end
             end
         })
 
-        config_module._size += 60
-        config_module.Options.Size = UDim2.fromOffset(240, config_module._size)
+        config_module._size += 5
 
         local color_module = InterfaceTab:create_module({
             title = 'Appearance',
@@ -2893,6 +2892,7 @@ end
         })
 
         local Color_Module_Frame = find_module_frame('Appearance')
+
         local Color_Targets = { 'Background', 'Group', 'Control', 'Accent', 'Toggle', 'InputBg', 'Text', 'TextDim' }
         local Color_Swatches = {}
         local Selected_Color_Target = 'Background'
@@ -4047,10 +4047,7 @@ end
         self:change_visiblity(Library._ui_open)
     end)
 
-    pcall(function()
-        self:build_interface_tab()
-    end)
-
+    self:build_interface_tab()
     self:LoadConfig()
 
     return self
