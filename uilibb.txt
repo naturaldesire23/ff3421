@@ -846,7 +846,6 @@ function Library:CreateColorPicker(parent, opts)
     local function bindOutsideClick()
         if outsideConn then outsideConn:Disconnect() end
         outsideConn = UserInputService.InputBegan:Connect(function(input, processed)
-            if processed then return end
             if not Popup.Visible then return end
             if input.UserInputType ~= Enum.UserInputType.MouseButton1
                and input.UserInputType ~= Enum.UserInputType.Touch then return end
@@ -1292,6 +1291,20 @@ function Library:create_ui()
 
     local function on_drag(input, process)
         if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+            -- Ignore drags that start on an active color popup
+            local active = Library._active_color_popup
+            if active and active.Visible then
+                local mouse = UserInputService:GetMouseLocation()
+                local inset = GuiService:GetGuiInset()
+                local tl = active.AbsolutePosition
+                local br = tl + active.AbsoluteSize
+                for _, p in ipairs({ mouse + inset, mouse }) do
+                    if p.X >= tl.X and p.X <= br.X and p.Y >= tl.Y and p.Y <= br.Y then
+                        return
+                    end
+                end
+            end
+
             self._dragging = true
             self._drag_start = input.Position
             self._container_position = Container.Position
@@ -1301,6 +1314,7 @@ function Library:create_ui()
                 self._dragging = false
             end)
         end
+    end
     end
 
     local function update_drag(input)
