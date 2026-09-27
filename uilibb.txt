@@ -532,7 +532,6 @@ function Library:CreateColorPicker(parent, opts)
         _swatch = nil,
     }
 
-    -- Restore saved flag
     if flag and Library._config._flags[flag] then
         local ok, c = pcall(function()
             return Library:hexToRGB(Library._config._flags[flag])
@@ -585,15 +584,27 @@ function Library:CreateColorPicker(parent, opts)
     SwatchStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
     SwatchStroke.Parent = Swatch
 
-    -- Popup
+    -- ═══ POPUP LAYER (top-level overlay ScreenGui) ═══
+    local popupLayer = Library._color_popup_layer
+    if not popupLayer or not popupLayer.Parent then
+        popupLayer = Instance.new('ScreenGui')
+        popupLayer.Name = (Library._clientName or 'Astral')..'ColorPopup'
+        popupLayer.ResetOnSpawn = false
+        popupLayer.IgnoreGuiInset = true
+        popupLayer.DisplayOrder = 999
+        popupLayer.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+        popupLayer.Parent = CoreGui
+        Library._color_popup_layer = popupLayer
+    end
+
     local Popup = Instance.new('Frame')
     Popup.Name = 'ColorPopup'
     Popup.Size = UDim2.fromOffset(200, 140)
     Popup.BackgroundColor3 = Color3.fromRGB(14, 14, 16)
     Popup.BorderSizePixel = 0
     Popup.Visible = false
-    Popup.ZIndex = 60
-    Popup.Parent = Row
+    Popup.ZIndex = 1
+    Popup.Parent = popupLayer
     Manager._popup = Popup
 
     local PopupCorner = Instance.new('UICorner')
@@ -616,7 +627,7 @@ function Library:CreateColorPicker(parent, opts)
     Field.ClipsDescendants = true
     Field.AutoButtonColor = false
     Field.Text = ''
-    Field.ZIndex = 61
+    Field.ZIndex = 2
     Field.Parent = Popup
 
     local FieldCorner = Instance.new('UICorner')
@@ -627,7 +638,7 @@ function Library:CreateColorPicker(parent, opts)
     Sat.Size = UDim2.new(1, 0, 1, 0)
     Sat.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
     Sat.BorderSizePixel = 0
-    Sat.ZIndex = 62
+    Sat.ZIndex = 3
     Sat.Parent = Field
     local SatGrad = Instance.new('UIGradient')
     SatGrad.Transparency = NumberSequence.new{
@@ -640,7 +651,7 @@ function Library:CreateColorPicker(parent, opts)
     Bright.Size = UDim2.new(1, 0, 1, 0)
     Bright.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
     Bright.BorderSizePixel = 0
-    Bright.ZIndex = 63
+    Bright.ZIndex = 4
     Bright.Parent = Field
     local BrightGrad = Instance.new('UIGradient')
     BrightGrad.Rotation = 90
@@ -654,7 +665,7 @@ function Library:CreateColorPicker(parent, opts)
     Cursor.AnchorPoint = Vector2.new(0.5, 0.5)
     Cursor.Size = UDim2.fromOffset(10, 10)
     Cursor.BackgroundTransparency = 1
-    Cursor.ZIndex = 64
+    Cursor.ZIndex = 5
     Cursor.Parent = Field
     local CursorCorner = Instance.new('UICorner')
     CursorCorner.CornerRadius = UDim.new(1, 0)
@@ -671,7 +682,7 @@ function Library:CreateColorPicker(parent, opts)
     Hue.BorderSizePixel = 0
     Hue.AutoButtonColor = false
     Hue.Text = ''
-    Hue.ZIndex = 61
+    Hue.ZIndex = 2
     Hue.Parent = Popup
     local HueCorner = Instance.new('UICorner')
     HueCorner.CornerRadius = UDim.new(1, 0)
@@ -693,7 +704,7 @@ function Library:CreateColorPicker(parent, opts)
     HueKnob.Size = UDim2.fromOffset(4, 14)
     HueKnob.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
     HueKnob.BorderSizePixel = 0
-    HueKnob.ZIndex = 62
+    HueKnob.ZIndex = 3
     HueKnob.Parent = Hue
     local HueKnobCorner = Instance.new('UICorner')
     HueKnobCorner.CornerRadius = UDim.new(1, 0)
@@ -780,17 +791,41 @@ function Library:CreateColorPicker(parent, opts)
         end
     end
 
+    local function positionPopup()
+        -- Position popup in screen space, anchored above/below the swatch
+        local swatchPos = Swatch.AbsolutePosition
+        local swatchSize = Swatch.AbsoluteSize
+        local popupSize = Popup.AbsoluteSize
+        local viewport = Workspace.CurrentCamera.ViewportSize
+        local inset = GuiService:GetGuiInset()
+
+        local x = swatchPos.X - popupSize.X + swatchSize.X
+        local y = swatchPos.Y + swatchSize.Y + 6
+
+        -- Clamp inside viewport
+        if x + popupSize.X > viewport.X - 8 then
+            x = viewport.X - popupSize.X - 8
+        end
+        if x < 8 then x = 8 end
+        if y + popupSize.Y > viewport.Y - 8 then
+            y = swatchPos.Y - popupSize.Y - 6
+        end
+        if y < 8 then y = 8 end
+
+        Popup.Position = UDim2.fromOffset(x, y)
+    end
+
     Swatch.MouseButton1Click:Connect(function()
         if Popup.Visible then
             closePopup()
             return
         end
-        -- close any other open popup
         if Library._active_color_popup and Library._active_color_popup ~= Popup then
             Library._active_color_popup.Visible = false
         end
         Library._active_color_popup = Popup
         Popup.Visible = true
+        positionPopup()
         local h, s, v = Color3.toHSV(Manager._color)
         set_color(h, s, v, true)
     end)
@@ -798,7 +833,6 @@ function Library:CreateColorPicker(parent, opts)
     Field.MouseButton1Down:Connect(function() beginDrag('cp_field_'..(flag or title), Field, update_field) end)
     Hue.MouseButton1Down:Connect(function() beginDrag('cp_hue_'..(flag or title), Hue, update_hue) end)
 
-    -- init
     local h, s, v = Color3.toHSV(initialColor)
     set_color(h, s, v, true)
     Swatch.BackgroundColor3 = initialColor
