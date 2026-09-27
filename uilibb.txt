@@ -2300,6 +2300,7 @@ end
                 return Box
             end
                         function ModuleManager:create_colorpicker(s)
+                            print("colorpicker s:", type(s), s)
                 LayoutOrderModule = LayoutOrderModule + 1
                 local ColorManager = {}
 
