@@ -603,8 +603,19 @@ function Library:CreateColorPicker(parent, opts)
     Popup.BackgroundColor3 = Color3.fromRGB(14, 14, 16)
     Popup.BorderSizePixel = 0
     Popup.Visible = false
+    Popup.Active = true
     Popup.Parent = popupLayer
     Manager._popup = Popup
+
+    -- Absorb clicks on the popup body so the main UI drag doesn't trigger
+    local PopupBlocker = Instance.new('TextButton')
+    PopupBlocker.Name = 'Blocker'
+    PopupBlocker.Size = UDim2.new(1, 0, 1, 0)
+    PopupBlocker.BackgroundTransparency = 1
+    PopupBlocker.Text = ''
+    PopupBlocker.AutoButtonColor = false
+    PopupBlocker.ZIndex = 1001
+    PopupBlocker.Parent = Popup
 
     local PopupCorner = Instance.new('UICorner')
     PopupCorner.CornerRadius = UDim.new(0, 8)
@@ -830,6 +841,46 @@ function Library:CreateColorPicker(parent, opts)
         local h, s, v = Color3.toHSV(Manager._color)
         set_color(h, s, v, true)
     end)
+        -- Close popup when clicking anywhere outside it
+    local outsideConn
+    local function bindOutsideClick()
+        if outsideConn then outsideConn:Disconnect() end
+        outsideConn = UserInputService.InputBegan:Connect(function(input, processed)
+            if processed then return end
+            if not Popup.Visible then return end
+            if input.UserInputType ~= Enum.UserInputType.MouseButton1
+               and input.UserInputType ~= Enum.UserInputType.Touch then return end
+
+            local loc = UserInputService:GetMouseLocation()
+            local inset = GuiService:GetGuiInset()
+            -- try both coordinate spaces
+            local candidates = { loc + inset, loc }
+            local inside = false
+            for _, p in ipairs(candidates) do
+                local tl = Popup.AbsolutePosition
+                local br = tl + Popup.AbsoluteSize
+                if p.X >= tl.X and p.X <= br.X and p.Y >= tl.Y and p.Y <= br.Y then
+                    inside = true
+                    break
+                end
+            end
+
+            -- Also treat clicks on the swatch as "inside" so it toggles cleanly
+            local stl = Swatch.AbsolutePosition
+            local sbr = stl + Swatch.AbsoluteSize
+            for _, p in ipairs(candidates) do
+                if p.X >= stl.X and p.X <= sbr.X and p.Y >= stl.Y and p.Y <= sbr.Y then
+                    inside = true
+                    break
+                end
+            end
+
+            if not inside then
+                closePopup()
+            end
+        end)
+    end
+    bindOutsideClick()
 
     Field.MouseButton1Down:Connect(function() beginDrag('cp_field_'..(flag or title), Field, update_field) end)
     Hue.MouseButton1Down:Connect(function() beginDrag('cp_hue_'..(flag or title), Hue, update_hue) end)
