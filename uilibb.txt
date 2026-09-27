@@ -806,40 +806,10 @@ function Library:CreateColorPicker(parent, opts)
         end
         Library._active_color_popup = Popup
         Popup.Visible = true
-        popupOpenedAt = os.clock()
         positionPopup()
         local h, s, v = Color3.toHSV(Manager._color)
         set_color(h, s, v, true)
     end)
-    -- Close popup when clicking anywhere outside it
-    local outsideConn
-    local popupOpenedAt = 0
-    local function bindOutsideClick()
-        if outsideConn then outsideConn:Disconnect() end
-        outsideConn = UserInputService.InputBegan:Connect(function(input, processed)
-            if not Popup.Visible then return end
-            if input.UserInputType ~= Enum.UserInputType.MouseButton1
-               and input.UserInputType ~= Enum.UserInputType.Touch then return end
-
-            -- Ignore clicks in the first 100ms after opening (layout not ready)
-            if os.clock() - popupOpenedAt < 0.1 then return end
-
-            local pt = UserInputService:GetMouseLocation() + GuiService:GetGuiInset()
-
-            local function inside(frame)
-                local tl = frame.AbsolutePosition
-                local br = tl + frame.AbsoluteSize
-                return pt.X >= tl.X and pt.X <= br.X and pt.Y >= tl.Y and pt.Y <= br.Y
-            end
-
-            if inside(Popup) or inside(Swatch) then
-                return
-            end
-
-            closePopup()
-        end)
-    end
-    bindOutsideClick()
 
     Field.MouseButton1Down:Connect(function() beginDrag('cp_field_'..(flag or title), Field, update_field) end)
     Hue.MouseButton1Down:Connect(function() beginDrag('cp_hue_'..(flag or title), Hue, update_hue) end)
