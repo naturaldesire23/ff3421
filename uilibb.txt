@@ -1814,20 +1814,22 @@ end
             UIListLayout_Opts.SortOrder = Enum.SortOrder.LayoutOrder
             UIListLayout_Opts.Parent = Options
 
-            -- ─── Register this module's child-disable hook ───────────
-            if settings.flag then
+             -- ─── Register this module's child-disable hook (opt-in only) ─
+            local reset_children = settings.reset_children_on_disable == true
+            if settings.flag and reset_children then
                 Library._module_children[settings.flag] = Library._module_children[settings.flag] or {}
                 Library._module_children[settings.flag].children = {}
             end
 
             local function registerChild(childManager, kind)
+                if not reset_children then return end
                 if not settings.flag then return end
                 local reg = Library._module_children[settings.flag]
                 if not reg then return end
                 table.insert(reg.children, { manager = childManager, kind = kind })
             end
             ModuleManager._registerChild = registerChild
-            -- ────────────────────────────────────────────────────────
+            -- ────────────────────────────────────────────────────────────
 
             function ModuleManager:change_state(state)
                 self._state = state
@@ -3406,6 +3408,7 @@ end
             flag = 'Gui_Colors',
             description = 'Customize UI Colors',
             section = 'left',
+            reset_children_on_disable = true,
             callback = function(state) end,
         })
 
@@ -3474,6 +3477,7 @@ end
             flag = 'Background_Image',
             description = 'Pick the Image Background',
             section = 'right',
+            reset_children_on_disable = true,
             callback = function(state)
                 if not self._background then return end
                 self._background.Visible = state
@@ -3776,6 +3780,7 @@ end
             flag = 'UI_Settings',
             description = 'UI behavior and overlays',
             section = 'left',
+            reset_children_on_disable = true,
             callback = function(state) end,
         })
 
@@ -3803,6 +3808,7 @@ end
             flag = 'UI_Notifications',
             description = 'Configure notification behavior',
             section = 'right',
+            reset_children_on_disable = true,
             callback = function(state) end,
         })
 
