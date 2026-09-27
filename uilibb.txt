@@ -2299,7 +2299,257 @@ end
 
                 return Box
             end
+                        function ModuleManager:create_colorpicker(s)
+                LayoutOrderModule = LayoutOrderModule + 1
+                local ColorManager = {}
 
+                if self._size == 0 then self._size = 11 end
+                self._size += 30
+
+                if ModuleManager._state then
+                    Module.Size = UDim2.fromOffset(240, 93 + self._size)
+                end
+                Options.Size = UDim2.fromOffset(240, self._size)
+
+                local Row = Instance.new('Frame')
+                Row.Name = 'ColorpickerRow'
+                Row.Size = UDim2.new(0, 220, 0, 24)
+                Row.BackgroundTransparency = 1
+                Row.BorderSizePixel = 0
+                Row.LayoutOrder = LayoutOrderModule
+                Row.Parent = Options
+
+                local TitleLabel = Instance.new('TextLabel')
+                TitleLabel.Name = 'TitleLabel'
+                TitleLabel.FontFace = FONT_MAIN
+                TitleLabel.TextSize = 12
+                TitleLabel.TextColor3 = Theme.Text
+                TitleLabel.Text = s.title or 'Color'
+                TitleLabel.Size = UDim2.new(1, -50, 1, 0)
+                TitleLabel.BackgroundTransparency = 1
+                TitleLabel.TextXAlignment = Enum.TextXAlignment.Left
+                TitleLabel.TextYAlignment = Enum.TextYAlignment.Center
+                TitleLabel.Parent = Row
+                table.insert(Library._elements, {obj = TitleLabel, prop = "TextColor3", tKey = "Text"})
+
+                local Swatch = Instance.new('TextButton')
+                Swatch.Name = 'Swatch'
+                Swatch.AnchorPoint = Vector2.new(1, 0.5)
+                Swatch.Position = UDim2.new(1, 0, 0.5, 0)
+                Swatch.Size = UDim2.fromOffset(40, 16)
+                Swatch.BackgroundColor3 = s.value or Color3.fromRGB(255, 255, 255)
+                Swatch.BorderSizePixel = 0
+                Swatch.AutoButtonColor = false
+                Swatch.Text = ''
+                Swatch.Parent = Row
+
+                local SwatchCorner = Instance.new('UICorner')
+                SwatchCorner.CornerRadius = UDim.new(0, 4)
+                SwatchCorner.Parent = Swatch
+
+                local SwatchStroke = Instance.new('UIStroke')
+                SwatchStroke.Color = Theme.GroupStroke
+                SwatchStroke.Transparency = 0.72
+                SwatchStroke.Thickness = 1
+                SwatchStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+                SwatchStroke.Parent = Swatch
+
+                -- Popup (colorpicker)
+                local Popup = Instance.new('Frame')
+                Popup.Name = 'ColorPopup'
+                Popup.Size = UDim2.fromOffset(200, 140)
+                Popup.BackgroundColor3 = Color3.fromRGB(14, 14, 16)
+                Popup.BorderSizePixel = 0
+                Popup.Visible = false
+                Popup.ZIndex = 30
+                Popup.Parent = Row
+
+                local PopupCorner = Instance.new('UICorner')
+                PopupCorner.CornerRadius = UDim.new(0, 8)
+                PopupCorner.Parent = Popup
+
+                local PopupStroke = Instance.new('UIStroke')
+                PopupStroke.Color = Theme.GroupStroke
+                PopupStroke.Transparency = 0.6
+                PopupStroke.Thickness = 1
+                PopupStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+                PopupStroke.Parent = Popup
+
+                local Field = Instance.new('TextButton')
+                Field.Name = 'Field'
+                Field.Position = UDim2.fromOffset(8, 8)
+                Field.Size = UDim2.fromOffset(184, 100)
+                Field.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+                Field.BorderSizePixel = 0
+                Field.ClipsDescendants = true
+                Field.AutoButtonColor = false
+                Field.Text = ''
+                Field.Parent = Popup
+
+                local FieldCorner = Instance.new('UICorner')
+                FieldCorner.CornerRadius = UDim.new(0, 4)
+                FieldCorner.Parent = Field
+
+                local Sat = Instance.new('Frame')
+                Sat.Size = UDim2.new(1, 0, 1, 0)
+                Sat.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+                Sat.BorderSizePixel = 0
+                Sat.Parent = Field
+                local SatGrad = Instance.new('UIGradient')
+                SatGrad.Transparency = NumberSequence.new{
+                    NumberSequenceKeypoint.new(0, 0),
+                    NumberSequenceKeypoint.new(1, 1)
+                }
+                SatGrad.Parent = Sat
+
+                local Bright = Instance.new('Frame')
+                Bright.Size = UDim2.new(1, 0, 1, 0)
+                Bright.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+                Bright.BorderSizePixel = 0
+                Bright.Parent = Field
+                local BrightGrad = Instance.new('UIGradient')
+                BrightGrad.Rotation = 90
+                BrightGrad.Transparency = NumberSequence.new{
+                    NumberSequenceKeypoint.new(0, 1),
+                    NumberSequenceKeypoint.new(1, 0)
+                }
+                BrightGrad.Parent = Bright
+
+                local Cursor = Instance.new('Frame')
+                Cursor.AnchorPoint = Vector2.new(0.5, 0.5)
+                Cursor.Size = UDim2.fromOffset(10, 10)
+                Cursor.BackgroundTransparency = 1
+                Cursor.Parent = Field
+                local CursorCorner = Instance.new('UICorner')
+                CursorCorner.CornerRadius = UDim.new(1, 0)
+                CursorCorner.Parent = Cursor
+                local CursorStroke = Instance.new('UIStroke')
+                CursorStroke.Color = Color3.fromRGB(255, 255, 255)
+                CursorStroke.Thickness = 2
+                CursorStroke.Parent = Cursor
+
+                local Hue = Instance.new('TextButton')
+                Hue.Position = UDim2.fromOffset(8, 114)
+                Hue.Size = UDim2.fromOffset(184, 10)
+                Hue.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+                Hue.BorderSizePixel = 0
+                Hue.AutoButtonColor = false
+                Hue.Text = ''
+                Hue.Parent = Popup
+                local HueCorner = Instance.new('UICorner')
+                HueCorner.CornerRadius = UDim.new(1, 0)
+                HueCorner.Parent = Hue
+                local HueGrad = Instance.new('UIGradient')
+                HueGrad.Color = ColorSequence.new{
+                    ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 0, 0)),
+                    ColorSequenceKeypoint.new(0.17, Color3.fromRGB(255, 255, 0)),
+                    ColorSequenceKeypoint.new(0.33, Color3.fromRGB(0, 255, 0)),
+                    ColorSequenceKeypoint.new(0.50, Color3.fromRGB(0, 255, 255)),
+                    ColorSequenceKeypoint.new(0.67, Color3.fromRGB(0, 0, 255)),
+                    ColorSequenceKeypoint.new(0.83, Color3.fromRGB(255, 0, 255)),
+                    ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 0, 0))
+                }
+                HueGrad.Parent = Hue
+
+                local HueKnob = Instance.new('Frame')
+                HueKnob.AnchorPoint = Vector2.new(0.5, 0.5)
+                HueKnob.Size = UDim2.fromOffset(4, 14)
+                HueKnob.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+                HueKnob.BorderSizePixel = 0
+                HueKnob.Parent = Hue
+                local HueKnobCorner = Instance.new('UICorner')
+                HueKnobCorner.CornerRadius = UDim.new(1, 0)
+                HueKnobCorner.Parent = HueKnob
+                local HueKnobStroke = Instance.new('UIStroke')
+                HueKnobStroke.Color = Color3.fromRGB(20, 20, 24)
+                HueKnobStroke.Thickness = 1
+                HueKnobStroke.Parent = HueKnob
+
+                local H, S, V = 0, 0, 1
+
+                local function set_color(h, s, v)
+                    H, S, V = h, s, v
+                    local color = Color3.fromHSV(h, s, v)
+                    Field.BackgroundColor3 = Color3.fromHSV(h, 1, 1)
+                    Cursor.Position = UDim2.new(s, 0, 1 - v, 0)
+                    HueKnob.Position = UDim2.new(h, 0, 0.5, 0)
+                    Swatch.BackgroundColor3 = color
+                    Library._config._flags[s.flag] = Library:rgbToHex(color)
+                    if s.callback then s.callback(color) end
+                    Config:save(game.GameId, Library._config)
+                end
+
+                local function calibrate(frame)
+                    local inset = GuiService:GetGuiInset()
+                    local loc = UserInputService:GetMouseLocation()
+                    local tl = frame.AbsolutePosition
+                    local br = tl + frame.AbsoluteSize
+                    for _, off in { Vector2.zero, inset, -inset } do
+                        local p = loc + off
+                        if p.X >= tl.X and p.X <= br.X and p.Y >= tl.Y and p.Y <= br.Y then
+                            return off
+                        end
+                    end
+                    return Vector2.zero
+                end
+
+                local function drag(key, frame, update)
+                    local off = calibrate(frame)
+                    update(off)
+                    self.Connections[key..'_move'] = UserInputService.InputChanged:Connect(function(input)
+                        if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+                            update(off)
+                        end
+                    end)
+                    self.Connections[key..'_ended'] = UserInputService.InputEnded:Connect(function(input)
+                        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+                            self.Connections:disconnect(key..'_move')
+                            self.Connections:disconnect(key..'_ended')
+                        end
+                    end)
+                end
+
+                local function update_field(off)
+                    local loc = UserInputService:GetMouseLocation() + off
+                    local sat = math.clamp((loc.X - Field.AbsolutePosition.X) / Field.AbsoluteSize.X, 0, 1)
+                    local bright = math.clamp((loc.Y - Field.AbsolutePosition.Y) / Field.AbsoluteSize.Y, 0, 1)
+                    set_color(H, sat, 1 - bright)
+                end
+
+                local function update_hue(off)
+                    local loc = UserInputService:GetMouseLocation() + off
+                    local hue = math.clamp((loc.X - Hue.AbsolutePosition.X) / Hue.AbsoluteSize.X, 0, 1)
+                    set_color(hue, S, V)
+                end
+
+                Swatch.MouseButton1Click:Connect(function()
+                    Popup.Visible = not Popup.Visible
+                    if Popup.Visible then
+                        local h, sat, v = Color3.toHSV(s.value or Color3.fromRGB(255, 255, 255))
+                        set_color(h, sat, v)
+                    end
+                end)
+
+                Field.MouseButton1Down:Connect(function() drag('cp_field_'..s.flag, Field, update_field) end)
+                Hue.MouseButton1Down:Connect(function() drag('cp_hue_'..s.flag, Hue, update_hue) end)
+
+                if Library._config._flags[s.flag] then
+                    local saved = Library:hexToRGB(Library._config._flags[s.flag])
+                    local h, sat, v = Color3.toHSV(saved)
+                    set_color(h, sat, v)
+                else
+                    set_color(0, 0, 1)
+                end
+
+                Library._flag_registry[s.flag] = function(color)
+                    if typeof(color) == "Color3" then
+                        local h, sat, v = Color3.toHSV(color)
+                        set_color(h, sat, v)
+                    end
+                end
+
+                return ColorManager
+            end
             function ModuleManager:create_dropdown(s)
                 if not s.Order then
                     LayoutOrderModule = LayoutOrderModule + 1
