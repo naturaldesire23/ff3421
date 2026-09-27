@@ -806,12 +806,14 @@ function Library:CreateColorPicker(parent, opts)
         end
         Library._active_color_popup = Popup
         Popup.Visible = true
+        popupOpenedAt = os.clock()
         positionPopup()
         local h, s, v = Color3.toHSV(Manager._color)
         set_color(h, s, v, true)
     end)
     -- Close popup when clicking anywhere outside it
     local outsideConn
+    local popupOpenedAt = 0
     local function bindOutsideClick()
         if outsideConn then outsideConn:Disconnect() end
         outsideConn = UserInputService.InputBegan:Connect(function(input, processed)
@@ -819,7 +821,9 @@ function Library:CreateColorPicker(parent, opts)
             if input.UserInputType ~= Enum.UserInputType.MouseButton1
                and input.UserInputType ~= Enum.UserInputType.Touch then return end
 
-            -- Use a single, consistent coordinate space: mouse + GuiInset
+            -- Ignore clicks in the first 100ms after opening (layout not ready)
+            if os.clock() - popupOpenedAt < 0.1 then return end
+
             local pt = UserInputService:GetMouseLocation() + GuiService:GetGuiInset()
 
             local function inside(frame)
