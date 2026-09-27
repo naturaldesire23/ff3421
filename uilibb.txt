@@ -2467,18 +2467,17 @@ end
 
                 local H, S, V = 0, 0, 1
 
-                local function set_color(h, s, v)
-                    H, S, V = h, s, v
-                    local color = Color3.fromHSV(h, s, v)
+                local function set_color(h, sat, val)
+                    H, S, V = h, sat, val
+                    local color = Color3.fromHSV(h, sat, val)
                     Field.BackgroundColor3 = Color3.fromHSV(h, 1, 1)
-                    Cursor.Position = UDim2.new(s, 0, 1 - v, 0)
+                    Cursor.Position = UDim2.new(sat, 0, 1 - val, 0)
                     HueKnob.Position = UDim2.new(h, 0, 0.5, 0)
                     Swatch.BackgroundColor3 = color
                     Library._config._flags[s.flag] = Library:rgbToHex(color)
                     if s.callback then s.callback(color) end
                     Config:save(game.GameId, Library._config)
                 end
-
                 local function calibrate(frame)
                     local inset = GuiService:GetGuiInset()
                     local loc = UserInputService:GetMouseLocation()
@@ -2527,6 +2526,20 @@ end
                     if Popup.Visible then
                         local h, sat, v = Color3.toHSV(s.value or Color3.fromRGB(255, 255, 255))
                         set_color(h, sat, v)
+                    end
+                end)
+
+                -- Закрытие по клику вне popup
+                UserInputService.InputBegan:Connect(function(input)
+                    if not Popup.Visible then return end
+                    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+                        local loc = UserInputService:GetMouseLocation()
+                        local popupPos = Popup.AbsolutePosition
+                        local popupSize = Popup.AbsoluteSize
+                        if loc.X < popupPos.X or loc.X > popupPos.X + popupSize.X
+                           or loc.Y < popupPos.Y or loc.Y > popupPos.Y + popupSize.Y then
+                            Popup.Visible = false
+                        end
                     end
                 end)
 
