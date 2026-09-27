@@ -2496,17 +2496,18 @@ end
                 local function drag(key, frame, update)
                     local off = calibrate(frame)
                     update(off)
-                    self.Connections[key..'_move'] = UserInputService.InputChanged:Connect(function(input)
+                    Connections[key..'_move'] = UserInputService.InputChanged:Connect(function(input)
                         if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
                             update(off)
                         end
                     end)
-                    self.Connections[key..'_ended'] = UserInputService.InputEnded:Connect(function(input)
+                    Connections[key..'_ended'] = UserInputService.InputEnded:Connect(function(input)
                         if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-                            self.Connections:disconnect(key..'_move')
-                            self.Connections:disconnect(key..'_ended')
+                            Connections:disconnect(key..'_move')
+                            Connections:disconnect(key..'_ended')
                         end
                     end)
+                end
                 end
 
                 local function update_field(off)
