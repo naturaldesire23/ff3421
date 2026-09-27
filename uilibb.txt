@@ -779,7 +779,6 @@ function Library:CreateColorPicker(parent, opts)
     end
 
     local function closePopup()
-        print("[ColorPicker] closePopup called", debug.traceback())
         Popup.Visible = false
         if Library._active_color_popup == Popup then
             Library._active_color_popup = nil
