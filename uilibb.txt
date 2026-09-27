@@ -591,8 +591,8 @@ function Library:CreateColorPicker(parent, opts)
         popupLayer.Name = (Library._clientName or 'Astral')..'ColorPopup'
         popupLayer.ResetOnSpawn = false
         popupLayer.IgnoreGuiInset = true
-        popupLayer.DisplayOrder = 999
-        popupLayer.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+        popupLayer.ZIndexBehavior = Enum.ZIndexBehavior.Global
+        popupLayer.DisplayOrder = 2147483647
         popupLayer.Parent = CoreGui
         Library._color_popup_layer = popupLayer
     end
@@ -605,6 +605,13 @@ function Library:CreateColorPicker(parent, opts)
     Popup.Visible = false
     Popup.ZIndex = 1
     Popup.Parent = popupLayer
+    Popup.ZIndex = 1000
+    Field.ZIndex = 1001
+    Sat.ZIndex = 1002
+    Bright.ZIndex = 1003
+    Cursor.ZIndex = 1004
+    Hue.ZIndex = 1001
+    HueKnob.ZIndex = 1002
     Manager._popup = Popup
 
     local PopupCorner = Instance.new('UICorner')
